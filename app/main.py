@@ -60,7 +60,7 @@ def get_balance():
 print("Balance:", get_balance()["result"])
 
 # Sell order
-def make_market_sell_order():
+def make_market_value_sell_order():
   return make_kraken_request(
     "/0/private/AddOrder",
     {
@@ -72,7 +72,7 @@ def make_market_sell_order():
   ).json()
 
 # Purcase order
-def make_market_purchase_order():
+def make_market_value_purchase_order():
   return make_kraken_request(
     "/0/private/AddOrder",
     {
@@ -112,11 +112,11 @@ while True:
   current_price_json = requests.get(api_url + "/0/public/Ticker?pair=BTCUSD").json()
   current_price = current_price_json['result']['XXBTZUSD']['c'][0]
 
-  # Buy if current price is less than the configured `buy_limit`
+  # Buy with market value if current price is less than the configured `buy_limit`
   if float(current_price) < buy_limit:
     print(f"Buying {buy_amount} of BTC at {current_price}!")
 
-    resp = make_market_purchase_order()
+    resp = make_market_value_purchase_order()
     error = resp["error"]
 
     if not error:
@@ -124,13 +124,13 @@ while True:
     else:
       print(f"Error: {error}")
   
-  # Sell if current price is more than the configured `buy_limit`
+  # Sell with market value if current price is more than the configured `buy_limit`
   elif float(current_price) > sell_limit:
-    resp = make_market_sell_order()
+    resp = make_market_value_sell_order()
     error = resp["error"]
 
     if not error:
-      print("Successfully sold BTC")
+      print(f"Successfully sold {sell_amount} of BTC for {current_price}")
     else:
       print(f"Error: {error}")
 
