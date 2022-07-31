@@ -46,8 +46,8 @@ def make_kraken_request(url_path, data={}):
   }
   return requests.post((api_url + url_path), headers=headers, data=data_with_nonce)
 
-resp = make_kraken_request(
+balance_response = make_kraken_request(
   "/0/private/Balance"
 )
 
-print(resp.json())
+print("balance:", balance_response.json()["result"])
