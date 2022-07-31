@@ -10,6 +10,11 @@ import time
 # Base API URL used in all Kraken requests
 api_url = "https://api.kraken.com"
 
+buy_limit = 100
+buy_amount = 0.01
+sell_limit = 50000
+sell_amount = 0.01
+
 # Get secret keys from local `.env` file
 with open(".env", "r") as file:
   lines = file.read().splitlines()
@@ -55,22 +60,19 @@ def get_balance():
 print("Balance:", get_balance()["result"])
 
 # Sell order
-def make_sell_order():
+def make_market_sell_order():
   return make_kraken_request(
     "/0/private/AddOrder",
     {
-      "ordertype": "limit",
+      "ordertype": "market",
       "type": "sell",
-      "volume": 1.25,
+      "volume": sell_amount,
       "pair": "XBTUSD",
-      "price": 50000
     }
   ).json()
 
-print("Sell order:", make_sell_order())
-
 # Purcase order
-def make_purchase_order():
+def make_market_purchase_order():
   return make_kraken_request(
     "/0/private/AddOrder",
     {
@@ -81,8 +83,6 @@ def make_purchase_order():
       "price": 100
     }
   ).json()
-
-print("Purchase order:", make_purchase_order())
 
 """
 Check current price for "XXBTZUSD" and either sell of buy said coin based on the current value
@@ -111,4 +111,30 @@ while True:
   current_price = current_price_json['result']['XXBTZUSD']['c'][0]
 
   print(current_price)
-  time.sleep(1)
+
+  if float(current_price) < buy_limit:
+    print(f"Buying {buy_amount} of BTC at {current_price}!")
+
+    resp = make_market_purchase_order()
+    error = resp["error"]
+
+    if not error:
+      print("Successfully bought BTC")
+    else:
+      print(f"Error: {error}")
+  
+  elif float(current_price) > sell_limit:
+    resp = make_market_sell_order()
+    error = resp["error"]
+
+    if not error:
+      print("Successfully sold BTC")
+    else:
+      print(f"Error: {error}")
+
+  else:
+    print(f"Current price is: {current_price}. Not buying or selling...")
+    print(f"Highest limit for buying is {buy_limit}")
+    print(f"Lowest limit for selling is {sell_limit}")
+
+  time.sleep(3)
