@@ -85,7 +85,9 @@ def make_market_purchase_order():
   ).json()
 
 """
-Check current price for "XXBTZUSD" and either sell of buy said coin based on the current value
+Check current price for "XXBTZUSD" and either:
+  - sell if the current price is more than `sell_limit`
+  - buy if the current price is less than `buy_limit`
 """
 while True:
   """
@@ -110,8 +112,7 @@ while True:
   current_price_json = requests.get(api_url + "/0/public/Ticker?pair=BTCUSD").json()
   current_price = current_price_json['result']['XXBTZUSD']['c'][0]
 
-  print(current_price)
-
+  # Buy if current price is less than the configured `buy_limit`
   if float(current_price) < buy_limit:
     print(f"Buying {buy_amount} of BTC at {current_price}!")
 
@@ -123,6 +124,7 @@ while True:
     else:
       print(f"Error: {error}")
   
+  # Sell if current price is more than the configured `buy_limit`
   elif float(current_price) > sell_limit:
     resp = make_market_sell_order()
     error = resp["error"]
@@ -132,9 +134,11 @@ while True:
     else:
       print(f"Error: {error}")
 
+  # Fallback for when current price is 
   else:
     print(f"Current price is: {current_price}. Not buying or selling...")
     print(f"Highest limit for buying is {buy_limit}")
     print(f"Lowest limit for selling is {sell_limit}")
 
+  # Try to buy / sell every 3 seconds
   time.sleep(3)
