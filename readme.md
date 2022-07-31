@@ -7,3 +7,5 @@
 4. Run the [app/main.py](app/main.py) file
 
 See https://www.kraken.com/u/security/api for Kraken API key generation.
+
+Also see the full Kraken API documentation here: https://docs.kraken.com/rest/.
