@@ -46,8 +46,34 @@ def make_kraken_request(url_path, data={}):
   }
   return requests.post((api_url + url_path), headers=headers, data=data_with_nonce)
 
+# Balance
 balance_response = make_kraken_request(
   "/0/private/Balance"
 )
+print("Balance:", balance_response.json()["result"])
 
-print("balance:", balance_response.json()["result"])
+# Sell order
+order_response = make_kraken_request(
+  "/0/private/AddOrder",
+  {
+    "ordertype": "limit",
+    "type": "sell",
+    "volume": 1.25,
+    "pair": "XBTUSD",
+    "price": 50000
+  }
+)
+print("Sell order:", order_response.json())
+
+# Purcase order
+order_response = make_kraken_request(
+  "/0/private/AddOrder",
+  {
+    "ordertype": "market",
+    "type": "buy",
+    "volume": 0.01,
+    "pair": "XBTUSD",
+    "price": 100
+  }
+)
+print("Purchase order:", order_response.json())
