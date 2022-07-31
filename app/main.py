@@ -35,16 +35,19 @@ def get_kraken_signature(urlpath, data, secret):
     return sigdigest.decode()
 
 # Request factory using the `requests` library
-def make_kraken_request(url_path, data):
+def make_kraken_request(url_path, data={}):
+  data_with_nonce = {
+    "nonce": get_utc_time_in_milliseconds(),
+    **data
+  }
   headers = {
     "API-Key": api_key,
-    "API-Sign": get_kraken_signature(url_path, data, api_secret)
+    "API-Sign": get_kraken_signature(url_path, data_with_nonce, api_secret)
   }
-  return requests.post((api_url + url_path), headers=headers, data=data)
+  return requests.post((api_url + url_path), headers=headers, data=data_with_nonce)
 
 resp = make_kraken_request(
-  "/0/private/Balance",
-  { "nonce": get_utc_time_in_milliseconds() }
+  "/0/private/Balance"
 )
 
 print(resp.json())
