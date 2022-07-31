@@ -49,7 +49,7 @@ def make_kraken_request(url_path, data={}):
 # Balance
 def get_balance():
   return make_kraken_request(
-  "/0/private/Balance"
+    "/0/private/Balance"
   ).json()
 
 print("Balance:", get_balance()["result"])
@@ -57,14 +57,14 @@ print("Balance:", get_balance()["result"])
 # Sell order
 def make_sell_order():
   return make_kraken_request(
-  "/0/private/AddOrder",
-  {
-    "ordertype": "limit",
-    "type": "sell",
-    "volume": 1.25,
-    "pair": "XBTUSD",
-    "price": 50000
-  }
+    "/0/private/AddOrder",
+    {
+      "ordertype": "limit",
+      "type": "sell",
+      "volume": 1.25,
+      "pair": "XBTUSD",
+      "price": 50000
+    }
   ).json()
 
 print("Sell order:", make_sell_order())
@@ -72,14 +72,43 @@ print("Sell order:", make_sell_order())
 # Purcase order
 def make_purchase_order():
   return make_kraken_request(
-  "/0/private/AddOrder",
-  {
-    "ordertype": "market",
-    "type": "buy",
-    "volume": 0.01,
-    "pair": "XBTUSD",
-    "price": 100
-  }
+    "/0/private/AddOrder",
+    {
+      "ordertype": "market",
+      "type": "buy",
+      "volume": 0.01,
+      "pair": "XBTUSD",
+      "price": 100
+    }
   ).json()
 
 print("Purchase order:", make_purchase_order())
+
+"""
+Check current price for "XXBTZUSD" and either sell of buy said coin based on the current value
+"""
+while True:
+  """
+  Example response:
+  {
+    'error': [],
+    'result': {
+      'XXBTZUSD': {
+        'a': ['23729.30000', '1', '1.000'],
+        'b': ['23725.20000', '1', '1.000'],
+        'c': ['23707.90000', '0.00132957'],
+        'v': ['560.00209407', '2504.84056307'],
+        'p': ['23761.90917', '24103.56103'],
+        't': [8489, 22248],
+        'l': ['23550.10000', '23525.60000'],
+        'h': ['23886.30000', '24614.90000'],
+        'o': '23646.50000'
+      }
+    }
+  }
+  """
+  current_price_json = requests.get(api_url + "/0/public/Ticker?pair=BTCUSD").json()
+  current_price = current_price_json['result']['XXBTZUSD']['c'][0]
+
+  print(current_price)
+  time.sleep(1)
