@@ -10,9 +10,9 @@ import time
 # Base API URL used in all Kraken requests
 api_url = "https://api.kraken.com"
 
-buy_limit = 100
+buy_limit_usd = 100
 buy_amount = 0.01
-sell_limit = 50000
+sell_limit_usd = 50000
 sell_amount = 0.01
 
 # Get secret keys from local `.env` file
@@ -86,8 +86,8 @@ def make_market_value_purchase_order():
 
 """
 Check current price for "XXBTZUSD" and either:
-  - sell if the current price is more than `sell_limit`
-  - buy if the current price is less than `buy_limit`
+  - sell if the current price is more than `sell_limit_usd`
+  - buy if the current price is less than `buy_limit_usd`
 """
 while True:
   """
@@ -112,20 +112,20 @@ while True:
   current_price_json = requests.get(api_url + "/0/public/Ticker?pair=BTCUSD").json()
   current_price = current_price_json['result']['XXBTZUSD']['c'][0]
 
-  # Buy with market value if current price is less than the configured `buy_limit`
-  if float(current_price) < buy_limit:
+  # Buy with market value if current price is less than the configured `buy_limit_usd`
+  if float(current_price) < buy_limit_usd:
     print(f"Buying {buy_amount} of BTC at {current_price}!")
 
     resp = make_market_value_purchase_order()
     error = resp["error"]
 
     if not error:
-      print("Successfully bought BTC")
+      print(f"Successfully bought {buy_amount} of BTC at  {current_price}!")
     else:
       print(f"Error: {error}")
   
-  # Sell with market value if current price is more than the configured `buy_limit`
-  elif float(current_price) > sell_limit:
+  # Sell with market value if current price is more than the configured `buy_limit_usd`
+  elif float(current_price) > sell_limit_usd:
     resp = make_market_value_sell_order()
     error = resp["error"]
 
@@ -137,8 +137,8 @@ while True:
   # Fallback for when current price is 
   else:
     print(f"Current price is: {current_price}. Not buying or selling...")
-    print(f"Highest limit for buying is {buy_limit}")
-    print(f"Lowest limit for selling is {sell_limit}")
+    print(f"Highest limit for buying is {buy_limit_usd}")
+    print(f"Lowest limit for selling is {sell_limit_usd}")
 
   # Try to buy / sell every 3 seconds
   time.sleep(3)
