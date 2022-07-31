@@ -4,6 +4,8 @@ import urllib.parse
 import hashlib
 import hmac
 import base64
+import requests
+import time
 
 api_url = "https://api.kraken.com"
 
@@ -25,9 +27,14 @@ def kraken_request(url_path, data, api_key, api_secret):
   headers = {
     "API-Key": api_key,
     "API-Sign": get_kraken_signature(url_path, data, api_secret)
-}
+  }
   return requests.post((api_url + url_path), headers=headers, data=data)
 
+resp = kraken_request(
+  "/0/private/Balance",
+  { "nonce": str(int(1000 * time.time())) },
+  api_key,
+  api_secret
+)
 
-signature = get_kraken_signature("/0/private/AddOrder", data, api_secret)
-print("API-Sign: {}".format(signature))
+print(resp.json())
