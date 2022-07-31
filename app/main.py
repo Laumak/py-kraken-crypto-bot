@@ -124,7 +124,7 @@ while True:
     else:
       print(f"Error: {error}")
   
-  # Sell with market value if current price is more than the configured `buy_limit_usd`
+  # Sell with market value if current price is more than the configured `sell_limit_usd`
   elif float(current_price) > sell_limit_usd:
     resp = make_market_value_sell_order()
     error = resp["error"]
